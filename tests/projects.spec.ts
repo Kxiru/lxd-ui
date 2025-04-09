@@ -91,7 +91,7 @@ test("project edit configuration", async ({ page, lxdVersion }) => {
     .getByRole("navigation", { name: "Project form navigation" })
     .getByText("Networks")
     .click();
-  await setTextarea(page, "Available networks", "lxcbr0");
+  await setTextarea(page, "Available networks", "lxdbr0");
   await setTextarea(page, "Network uplinks", "lxcbr0");
   await setTextarea(page, "Network zones", "foo,bar");
 
@@ -153,7 +153,7 @@ test("project edit configuration", async ({ page, lxdVersion }) => {
     .getByRole("navigation", { name: "Project form navigation" })
     .getByText("Networks")
     .click();
-  await assertReadMode(page, "Available networks", "lxcbr0");
+  await assertReadMode(page, "Available networks", "lxdbr0");
   await assertReadMode(page, "Network uplinks", "lxcbr0");
   await assertReadMode(page, "Network zones", "foo,bar");
 
