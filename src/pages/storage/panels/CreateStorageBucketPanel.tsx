@@ -40,6 +40,9 @@ const CreateStorageBucketPanel: FC = () => {
         ...testDuplicateStorageBucketName(panelParams.project, controllerState),
       )
       .required("Bucket name is required"),
+    pool: Yup.string()
+      .notOneOf([""])
+      .required("Pool must have a Ceph Object driver"),
   });
 
   const handleSuccess = (bucketName: string, pool: string) => {

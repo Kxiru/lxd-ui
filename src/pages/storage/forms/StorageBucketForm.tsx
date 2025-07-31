@@ -63,14 +63,20 @@ const StorageBucketForm: FC<Props> = ({ formik, bucket }) => {
         invalidDrivers={Object.keys(storageDriverLabels).filter((key) => {
           return key !== cephObject;
         })}
+        formik={formik}
         selectProps={{
           id: "bucket-create-pool",
           label: "Storage pool",
           disabled: !!bucketEditRestriction || isEditing,
           help: isEditing
             ? "Storage bucket pool can't be changed"
-            : "Pool must have a Ceph Object driver",
+            : formik.errors.pool
+              ? null
+              : "Pool must have a Ceph Object driver",
+
+          onBlur: formik.handleBlur,
         }}
+        required
       />
       <DiskSizeSelector
         label="Size"

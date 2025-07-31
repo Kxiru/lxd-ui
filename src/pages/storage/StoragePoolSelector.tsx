@@ -8,12 +8,16 @@ import { cephObject } from "util/storageOptions";
 import StoragePoolOptionLabel from "./StoragePoolOptionLabel";
 import StoragePoolOptionHeader from "./StoragePoolOptionHeader";
 import { useStoragePools } from "context/useStoragePools";
+import type { FormikProps } from "formik";
+import type { StorageBucketFormValues } from "./forms/StorageBucketForm";
 
 interface Props {
   value: string;
   setValue: (value: string) => void;
+  formik?: FormikProps<StorageBucketFormValues>;
   selectProps?: SelectProps;
   invalidDrivers?: string[];
+  required?: boolean;
 }
 
 const StoragePoolSelector: FC<Props> = ({
@@ -21,6 +25,8 @@ const StoragePoolSelector: FC<Props> = ({
   setValue,
   selectProps,
   invalidDrivers = [cephObject],
+  required = false,
+  formik,
 }) => {
   const notify = useNotify();
   const { data: pools = [], error, isLoading } = useStoragePools();
@@ -81,6 +87,8 @@ const StoragePoolSelector: FC<Props> = ({
       value={value}
       dropdownClassName="storage-pool-select-dropdown"
       header={<StoragePoolOptionHeader />}
+      required={required}
+      error={selectProps?.onBlur ? formik?.errors.pool : null}
     />
   );
 };
