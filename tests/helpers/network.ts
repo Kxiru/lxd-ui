@@ -25,6 +25,9 @@ export const createNetwork = async (
   if (type === "physical") {
     await page.getByLabel("Parent").selectOption({ index: 1 });
   }
+  if (type === "ovn") {
+    await page.getByLabel("Uplink").selectOption({ index: 1 });
+  }
   await page.getByRole("button", { name: "Create", exact: true }).click();
   const networkLink = await getNetworkLink(page, network);
   await expect(networkLink).toBeVisible();

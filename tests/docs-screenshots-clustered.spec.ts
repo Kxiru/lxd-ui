@@ -64,3 +64,25 @@ test("Clustered storage volumes", async ({ page }) => {
   });
   await deletePool(page, poolName);
 });
+
+test("LXD - UI Folder - Clustered", async ({ page }) => {
+  //This test assumes that there is a cluster member named micro2 within the environment. This is the value within the original screenshot, but it can also be changed to accomodate alternative names.
+  const clusterMemberName = "micro2";
+  page.setViewportSize({ width: 1440, height: 800 });
+  await gotoURL(page, "/ui/");
+  await page.getByRole("link", { name: "Instances", exact: true }).click();
+  await page.getByText("Create instance").click();
+  await page.getByPlaceholder("Enter name").fill("Ubuntu-vm-server2");
+  await page.getByRole("button", { name: "Browse images" }).click();
+  await page
+    .locator("tr")
+    .filter({ hasText: "Ubuntu24.04 LTSnoblealldefaultUbuntuSelect" })
+    .getByRole("button")
+    .click();
+  await page.getByLabel("Cluster member").selectOption(clusterMemberName);
+  await page.getByLabel("Cluster member").dblclick();
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_instance_ex4.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+});

@@ -1,9 +1,14 @@
 import { expect, test } from "./fixtures/lxd-test";
 import { gotoURL } from "./helpers/navigate";
-import { deleteInstance, visitInstance } from "./helpers/instances";
+import {
+  deleteInstance,
+  visitAndStartInstance,
+  visitInstance,
+} from "./helpers/instances";
 import { createPool, deletePool } from "./helpers/storagePool";
-import { deleteNetwork, visitNetwork } from "./helpers/network";
+import { createNetwork, deleteNetwork, visitNetwork } from "./helpers/network";
 import { createVolume, deleteVolume } from "./helpers/storageVolume";
+import { setOption } from "./helpers/configuration";
 
 test.beforeEach(() => {
   test.skip(
@@ -291,7 +296,6 @@ test("storage volume snapshots", async ({ page }) => {
   await expect(
     page.getByText("There are no snapshots for this volume."),
   ).toBeVisible();
-
   await page.screenshot({
     path: "tests/screenshots/doc/images/storage/storage_volumes_snapshots_tab.png",
     clip: getClipPosition(240, 0, 1420, 350),
@@ -300,7 +304,6 @@ test("storage volume snapshots", async ({ page }) => {
   await page.getByRole("button", { name: "Create snapshot" }).click();
   await page.getByLabel("Snapshot name").click();
   await page.getByLabel("Snapshot name").fill(snapshot);
-
   await page.screenshot({
     path: "tests/screenshots/doc/images/storage/storage_volumes_snapshots_create.png",
     clip: getClipPosition(480, 250, 950, 560),
@@ -310,7 +313,6 @@ test("storage volume snapshots", async ({ page }) => {
   await page.waitForSelector(
     `text=Snapshot ${snapshot} created for volume ${volumeName}.`,
   );
-
   await page.screenshot({
     path: "tests/screenshots/doc/images/storage/storage_volumes_snapshots_list.png",
     clip: getClipPosition(240, 0, 1420, 320),
@@ -321,7 +323,6 @@ test("storage volume snapshots", async ({ page }) => {
     .filter({ hasText: snapshot })
     .hover();
   await page.getByLabel("Edit snapshot").click();
-
   await page.screenshot({
     path: "tests/screenshots/doc/images/storage/storage_volumes_snapshots_configuration.png",
     clip: getClipPosition(480, 250, 950, 560),
@@ -425,9 +426,12 @@ test("LXD - tutorial", async ({ page }) => {
   });
   await page.getByRole("button", { name: "Cancel" }).click();
 
-  // Add broken terminal screenshot
   await page.getByTestId("tab-link-Terminal").click();
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(2000);
+  await page.keyboard.type("rm /usr/bin/bash");
+  await page.keyboard.press("Enter");
+  await page.reload();
+  await page.waitForSelector(`text=The connection was closed abnormally`);
   await page.screenshot({
     path: "tests/screenshots/doc/images/tutorial/broken_terminal.png",
     clip: getClipPosition(0, 0, 1440, 760),
@@ -454,7 +458,7 @@ test("LXD - tutorial", async ({ page }) => {
     path: "tests/screenshots/doc/images/tutorial/create_desktop_vm.png",
     clip: getClipPosition(0, 0, 1440, 760),
   });
-  await page.getByRole("button", { name: "Create and start" }).click();
+  await page.getByRole("button", { name: "Create", exact: true }).click();
 
   await visitInstance(page, vminstance);
   await page.getByTestId("tab-link-Configuration").click();
@@ -466,20 +470,29 @@ test("LXD - tutorial", async ({ page }) => {
     path: "tests/screenshots/doc/images/tutorial/root_disk_size.png",
     clip: getClipPosition(0, 0, 1440, 760),
   });
-  await page.getByRole("button", { name: "Cancel" }).click();
 
-  //desktop console
-  await page.getByTestId("tab-link-Console").click();
-  await page.screenshot({
-    path: "tests/screenshots/doc/images/tutorial/desktop_console.png",
-    clip: getClipPosition(0, 0, 1440, 760),
-  });
+  // desktop_console.png and hello_world_desktop.png may nee to be screenshotted automatically as it take too long for the instance to start up by itself. The test times out.
 
-  //hello world desktop
-  await page.screenshot({
-    path: "tests/screenshots/doc/images/tutorial/hello_world_desktop.png",
-    clip: getClipPosition(0, 0, 1440, 760),
-  });
+  // // Turn on Secure Boot in order to start the VM.
+  // await page.getByText("Security policies").click();
+  // await setOption(page, "Enable secureboot", "false");
+  // await page.getByRole("button", { name: "Save 2 changes" }).click();
+  // await page.getByTestId("notification-close-button").click();
+  // await page.waitForTimeout(1000);
+
+  // // Desktop console
+  // await visitAndStartInstance(page, vminstance);
+  // await page.getByTestId("tab-link-Console").click();
+  // await page.screenshot({
+  //   path: "tests/screenshots/doc/images/tutorial/desktop_console.png",
+  //   clip: getClipPosition(0, 0, 1440, 760),
+  // });
+
+  // // Hello world desktop
+  // await page.screenshot({
+  //   path: "tests/screenshots/doc/images/tutorial/hello_world_desktop.png",
+  //   clip: getClipPosition(0, 0, 1440, 760),
+  // });
 
   await gotoURL(page, "/ui/");
   await page.getByText("Instances", { exact: true }).click();
@@ -490,4 +503,160 @@ test("LXD - tutorial", async ({ page }) => {
 
   await deleteInstance(page, instance);
   await deleteInstance(page, vminstance);
+});
+
+test("LXD - UI Folder", async ({ page }) => {
+  page.setViewportSize({ width: 1440, height: 1000 });
+
+  await gotoURL(page, "/ui/");
+
+  // Project Screenshots
+  await page.waitForTimeout(1000);
+  await page.getByRole("button", { name: "default", exact: true }).click();
+  await page.getByRole("button", { name: "Create project" }).click();
+  await page.getByPlaceholder("Enter name").fill("my-project");
+  await page
+    .getByRole("combobox", { name: "Features" })
+    .selectOption("customised");
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_project.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByPlaceholder("Enter name").fill("my-restricted-project");
+  await page.getByText("Allow custom restrictions on a project level").click();
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_restr_project1.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page
+    .getByRole("navigation", { name: "Project form navigation" })
+    .getByText("Instances")
+    .click();
+  await setOption(page, "Snapshot creation", "allow");
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_restr_project2.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  //Instance Screenshots
+  page.setViewportSize({ width: 1440, height: 800 });
+  await page.getByRole("link", { name: "Instances", exact: true }).click();
+  await page.getByText("Create instance").click();
+  await page.getByPlaceholder("Enter name").fill("Ubuntu-container");
+  await page.getByRole("button", { name: "Browse images" }).click();
+  await page
+    .locator("tr")
+    .filter({ hasText: "Ubuntu24.04 LTSnoblealldefaultUbuntuSelect" })
+    .getByRole("button")
+    .click();
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_instance_ex1.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByPlaceholder("Enter name").fill("Ubuntu-vm");
+  await page.getByLabel("Instance type").click();
+  await page.getByLabel("Instance type").selectOption("VM");
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_instance_ex2.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByText("Disk").click();
+  await page.getByRole("button", { name: "Create override" }).click();
+  await page.getByPlaceholder("Enter value").fill("30");
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_instance_ex2-2.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByText("Resource limits").click();
+  await page
+    .getByRole("row", { name: "Exposed CPU limit" })
+    .getByRole("button")
+    .click();
+  await page.getByPlaceholder("Number of exposed cores").fill("1");
+  await page
+    .getByRole("row", { name: "Memory limit Usage" })
+    .getByRole("button")
+    .click();
+  await page.getByPlaceholder("Enter value").fill("8");
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/create_instance_ex3.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  //Network forwards screenshots
+
+  const network1 = "lxdbr0";
+  const network2 = "ovntest";
+  await createNetwork(page, network1, "bridge");
+  await createNetwork(page, network2, "ovn");
+
+  await visitNetwork(page, network2);
+  await page.getByText("/24").getByRole("button").click();
+  let networkSubnet = await page.inputValue("input#ipv4_address");
+  let listenAddress = networkSubnet.replace("1/24", "1");
+  let targetAddress = networkSubnet.replace("1/24", "3");
+  await page.getByTestId("tab-link-Forwards").click();
+  await page.getByRole("link", { name: "Create forward" }).click();
+  await page.getByText("Manually enter address").click();
+  await page.getByLabel("Listen address").fill(listenAddress);
+  await page.getByLabel("Default target address").fill(targetAddress);
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/forward_create_ovn.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  visitNetwork(page, network1);
+  await page.getByText("/24").getByRole("button").click();
+  networkSubnet = await page.inputValue("input#ipv4_address");
+  listenAddress = networkSubnet.replace("1/24", "1");
+  targetAddress = networkSubnet.replace("1/24", "3");
+  await page.getByTestId("tab-link-Forwards").click();
+  await page.getByRole("link", { name: "Create forward" }).click();
+  await page.getByLabel("Listen address").fill(listenAddress);
+  await page.getByLabel("Default target address").fill(targetAddress);
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/forward_create_bridge.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByRole("link", { name: "Edit network forward" }).click();
+  await page.getByRole("button", { name: "Add port", exact: true }).click();
+  await page.getByLabel("Port 0 listen port").fill("80");
+  await page.getByLabel("Port 0 target port").fill("443");
+  await page.getByLabel("Port 0 target address").fill(targetAddress);
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/forward_create_port.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByLabel("Delete port").click();
+  await page.getByRole("button", { name: "Create" }).click();
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/forward_delete.png",
+    clip: getClipPosition(240, 0, 1440, 400),
+  });
+
+  await page.getByRole("link", { name: "Edit network forward" }).click();
+  await page.getByRole("button", { name: "Add port", exact: true }).click();
+  await page.getByLabel("Port 0 listen port").fill("80");
+  await page.getByLabel("Port 0 target port").fill("443");
+  await page.getByLabel("Port 0 target address").fill(targetAddress);
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/edit_ex1.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  await page.getByRole("button", { name: "Update" }).click();
+  await page.screenshot({
+    path: "tests/screenshots/doc/images/ui/edit_ex1.png",
+    clip: getClipPosition(240, 0, 1440, 760),
+  });
+
+  deleteNetwork(page, network1);
+  deleteNetwork(page, network2);
 });
