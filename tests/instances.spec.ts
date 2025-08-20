@@ -281,7 +281,7 @@ test("Bulk start, pause, unpause and stop instances", async ({ page }) => {
   //Bulk start instances
   await page
     .getByRole("row", {
-      name: "select Name Type Cluster member Status Actions",
+      name: "select Name Type Description Status Actions",
     })
     .getByLabel("multiselect rows")
     .click();
