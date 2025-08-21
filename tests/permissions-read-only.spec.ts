@@ -15,13 +15,6 @@ import { randomGroupName } from "./helpers/permission-groups";
 import { randomIdentityName } from "./helpers/permission-identities";
 import { openInstancePanel } from "./helpers/instancePanel";
 
-test.beforeEach(() => {
-  test.skip(
-    Boolean(process.env.CI),
-    "This suite is currently only run manually to test View-Only user permissions.",
-  );
-});
-
 test.describe("Given a user with Viewer Server permissions...", () => {
   const ISO_FILE = "./tests/fixtures/foo.iso";
 
@@ -97,6 +90,38 @@ test.describe("Given a user with Viewer Server permissions...", () => {
     } catch (err) {
       console.error("Error occurred:", err);
     }
+
+    try {
+      const fingerprint = execSync(
+        "lxc config trust list | grep lxd-ui.crt | awk '{print $8}'", //sudo -E
+      ).toString();
+
+      console.log(
+        "[Remove current user]",
+        execSync(`lxc config trust remove ${fingerprint}`).toString(), //sudo -E
+      );
+
+      console.log(
+        "[Create test-viewers group]",
+        execSync(`lxc auth group create test-viewers`).toString(),
+      );
+
+      console.log(
+        "[Grant viewer entitlement to test-viewers group]",
+        execSync(
+          `lxc auth group permission add test-viewers server viewer`,
+        ).toString(),
+      );
+
+      console.log(
+        "[Add new user to test-viewers group] - ",
+        execSync(
+          `lxc auth identity create tls/lxd-ui --group test-viewers keys/lxd-ui.crt`,
+        ).toString(),
+      );
+    } catch (err) {
+      console.error("Error occurred during setup:", err);
+    }
   });
 
   test.afterAll(() => {
@@ -149,6 +174,25 @@ test.describe("Given a user with Viewer Server permissions...", () => {
       );
     } catch (err) {
       console.error("Cleanup error:", err);
+    }
+
+    try {
+      console.log(
+        "[Delete restricted user]",
+        execSync(`lxc auth identity delete tls/lxd-ui`).toString(),
+      );
+
+      console.log(
+        "[Delete test-viewers group]",
+        execSync(`lxc auth group delete test-viewers`).toString(),
+      );
+
+      console.log(
+        "[Reinstate admin user]",
+        execSync("lxc config trust add keys/lxd-ui.crt").toString(),
+      );
+    } catch (err) {
+      console.error("Error occurred during afterAll cleanup:", err);
     }
   });
 
@@ -409,9 +453,10 @@ test.describe("Given a user with Viewer Server permissions...", () => {
     await expect(
       page.getByRole("button", { name: "Create project" }),
     ).toBeDisabled();
-    await page.getByRole("button", { name: "default" }).click();
+    await page.keyboard.press("Escape");
 
     await page.getByText("Configuration", { exact: true }).click();
+    await page.waitForLoadState("networkidle");
     await expect(page.getByLabel("Description")).toBeDisabled();
   });
 
