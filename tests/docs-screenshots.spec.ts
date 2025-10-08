@@ -14,7 +14,7 @@ import { openInstancePanel } from "./helpers/instancePanel";
 
 test.beforeEach(() => {
   test.skip(
-    Boolean(process.env.CI),
+    !!process.env.CI && !process.env.ENABLE_SCREENSHOTS,
     "This suite is only run manually to create screenshots for the documentation",
   );
 });
@@ -29,7 +29,7 @@ test("instances", async ({ page }) => {
   await createVolume(page, volume);
   await gotoURL(page, "/ui/");
   await page.getByText("Instances", { exact: true }).click();
-  await page.getByText("Create instance").click();
+  await page.getByRole("button", { name: "Create instance" }).click();
   await page.getByPlaceholder("Enter name").fill(instance);
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
@@ -343,7 +343,7 @@ test("LXD - Tutorial folder", async ({ page }) => {
 
   await page.getByRole("button", { name: "default", exact: true }).click();
   await page.getByRole("link", { name: "Instances", exact: true }).click();
-  await page.getByText("Create instance").click();
+  await page.getByRole("button", { name: "Create instance" }).click();
   await page.getByPlaceholder("Enter name").fill("Ubuntu-vm");
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
@@ -441,7 +441,7 @@ test("LXD - Tutorial - Graphical consoles", async ({ page }) => {
   const vminstance = "Ubuntu-desktop";
   await gotoURL(page, "/ui/");
   await page.getByText("Instances", { exact: true }).click();
-  await page.getByText("Create instance").click();
+  await page.getByRole("button", { name: "Create instance" }).click();
   await page.getByPlaceholder("Enter name").fill(vminstance);
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
@@ -562,7 +562,7 @@ test("LXD - UI Folder - Instances", async ({ page }) => {
 
   //Instance Screenshots
   await page.getByRole("link", { name: "Instances", exact: true }).click();
-  await page.getByText("Create instance").click();
+  await page.getByRole("button", { name: "Create instance" }).click();
   await page.getByPlaceholder("Enter name").fill("Ubuntu-container");
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
