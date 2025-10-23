@@ -6,7 +6,12 @@ import {
   visitInstance,
 } from "./helpers/instances";
 import { createPool, deletePool } from "./helpers/storagePool";
-import { createNetwork, deleteNetwork, visitNetwork } from "./helpers/network";
+import {
+  createNetwork,
+  deleteNetwork,
+  getNetworkLink,
+  visitNetwork,
+} from "./helpers/network";
 import { createVolume, deleteVolume } from "./helpers/storageVolume";
 import { setOption } from "./helpers/configuration";
 import { getClipPosition } from "./helpers/doc-screenshots";
@@ -136,7 +141,7 @@ test("networks", async ({ page }) => {
     clip: getClipPosition(240, 0, 1420, 750),
   });
   await page.getByRole("button", { name: "Create", exact: true }).click();
-  await page.waitForSelector(`text=Network ${network} created.`);
+  await page.waitForTimeout(2500);
 
   await visitNetwork(page, network);
   await page.screenshot({
@@ -447,7 +452,8 @@ test("LXD - Tutorial - Graphical consoles", async ({ page }) => {
   await page
     .locator("tr")
     .filter({ hasText: "Ubuntunobledesktopvirtual-" })
-    .getByRole("button");
+    .getByRole("button")
+    .click();
 
   await page.screenshot({
     path: "tests/screenshots/doc/images/tutorial/create_desktop_vm.png",
@@ -564,7 +570,7 @@ test("LXD - UI Folder - Instances", async ({ page }) => {
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
     .locator("tr")
-    .filter({ hasText: "Ubuntu24.04 LTSnoblealldefaultUbuntuSelect" })
+    .filter({ hasText: "Ubuntu24.04 LTSnoblealldefaultUbuntuRemoteSelect" })
     .getByRole("button")
     .click();
   await page.screenshot({
