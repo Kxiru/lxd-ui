@@ -348,7 +348,7 @@ test("LXD - Tutorial folder", async ({ page }) => {
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
     .locator("tr")
-    .filter({ hasText: "Ubuntu24.04 LTSnoblealldefaultUbuntuSelect" })
+    .filter({ hasText: "Ubuntu24.04 LTSnoblealldefaultUbuntuRemoteSelect" })
     .getByRole("button")
     .click();
 
@@ -446,11 +446,8 @@ test("LXD - Tutorial - Graphical consoles", async ({ page }) => {
   await page.getByRole("button", { name: "Browse images" }).click();
   await page
     .locator("tr")
-    .filter({
-      hasText: "Ubuntunobledesktopvirtual-machineubuntu/noble/desktop",
-    })
-    .getByRole("button")
-    .click();
+    .filter({ hasText: "Ubuntunobledesktopvirtual-" })
+    .getByRole("button");
 
   await page.screenshot({
     path: "tests/screenshots/doc/images/tutorial/create_desktop_vm.png",
