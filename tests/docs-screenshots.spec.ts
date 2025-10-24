@@ -6,7 +6,12 @@ import {
   visitInstance,
 } from "./helpers/instances";
 import { createPool, deletePool } from "./helpers/storagePool";
-import { createNetwork, deleteNetwork, getNetworkLink, visitNetwork } from "./helpers/network";
+import {
+  createNetwork,
+  deleteNetwork,
+  getNetworkLink,
+  visitNetwork,
+} from "./helpers/network";
 import { createVolume, deleteVolume } from "./helpers/storageVolume";
 import { setOption } from "./helpers/configuration";
 import { getClipPosition } from "./helpers/doc-screenshots";
@@ -447,7 +452,8 @@ test("LXD - Tutorial - Graphical consoles", async ({ page }) => {
   await page
     .locator("tr")
     .filter({ hasText: "Ubuntunobledesktopvirtual-" })
-    .getByRole("button").click();
+    .getByRole("button")
+    .click();
 
   await page.screenshot({
     path: "tests/screenshots/doc/images/tutorial/create_desktop_vm.png",
