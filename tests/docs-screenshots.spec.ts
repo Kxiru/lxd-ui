@@ -386,6 +386,7 @@ test("LXD - Tutorial folder", async ({ page }) => {
 
   await page.getByRole("button", { name: "Create and start" }).click();
   await page.getByTestId("notification-close-button").click();
+  await page.waitForTimeout(300);
   await page.getByTestId("notification-close-button").click();
 
   await openInstancePanel(page, instance);
@@ -656,8 +657,8 @@ test("LXD - UI Folder - Networks", async ({ page }) => {
   await page.getByText("Create network").click();
   await page.getByPlaceholder("Enter name").fill(network2);
   await page.getByLabel("Type").selectOption("bridge");
-  await page.getByRole("button", { name: "Create", exact: true }).click();
   await page.waitForTimeout(2500);
+  await page.getByRole("button", { name: "Create", exact: true }).click();
   await visitNetwork(page, network2);
 
   await page.getByText("/24").getByRole("button").click();
@@ -678,6 +679,7 @@ test("LXD - UI Folder - Networks", async ({ page }) => {
   await page.getByRole("heading", { name: "Create a network" }).click();
   await page.getByLabel("Type").selectOption("bridge");
   await page.getByPlaceholder("Enter name").fill(network1);
+  await page.waitForTimeout(2500);
   await page.getByRole("button", { name: "Create", exact: true }).click();
   await page.getByTestId("notification-close-button").click();
   await page.getByRole("link", { name: network1, exact: true }).click();
