@@ -386,8 +386,6 @@ test("LXD - Tutorial folder", async ({ page }) => {
 
   await page.getByRole("button", { name: "Create and start" }).click();
   await page.getByTestId("notification-close-button").click();
-  await page.waitForTimeout(300);
-  await page.getByTestId("notification-close-button").click();
 
   await openInstancePanel(page, instance);
   await page.waitForSelector(`text=Instance summary`);
