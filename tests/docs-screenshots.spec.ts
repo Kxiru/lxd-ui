@@ -657,6 +657,7 @@ test("LXD - UI Folder - Networks", async ({ page }) => {
   await page.getByLabel("Type").selectOption("bridge");
   await page.waitForTimeout(2500);
   await page.getByRole("button", { name: "Create", exact: true }).click();
+  await page.waitForTimeout(2500);
   await visitNetwork(page, network2);
 
   await page.getByText("/24").getByRole("button").click();
