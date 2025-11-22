@@ -4,7 +4,8 @@ export type LxdNetworkType =
   | "ovn"
   | "physical"
   | "macvlan"
-  | "sriov";
+  | "sriov"
+  | "";
 export type LxdNetworkDnsMode = "none" | "managed" | "dynamic";
 export type LxdNetworkFanType = "vxlan" | "ipip";
 
@@ -170,6 +171,7 @@ export interface LxdNetworkPeer {
   description: "string";
   target_project: "string";
   status: "string";
+  etag?: string;
 }
 
 export interface LxdNetworkAllocation {

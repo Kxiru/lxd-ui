@@ -179,23 +179,27 @@ const NetworkForwards: FC<Props> = ({ network, project }) => {
 
   return (
     <>
-      {canEditNetwork(network) && (
-        <Link
-          className="p-button--positive u-no-margin--bottom u-float-right"
-          to={`/ui/project/${encodeURIComponent(project)}/network/${encodeURIComponent(network.name)}/forwards/create`}
-        >
-          Create forward
-        </Link>
-      )}
-      {!canEditNetwork(network) && (
-        <Button
-          appearance="positive"
-          className="u-float-right u-no-margin--bottom"
-          disabled
-          title="You do not have permission to create network forwards for this network"
-        >
-          <span>Create forward</span>
-        </Button>
+      {hasNetworkForwards && (
+        <>
+          {canEditNetwork(network) && (
+            <Link
+              className="p-button--positive u-no-margin--bottom u-float-right"
+              to={`/ui/project/${encodeURIComponent(project)}/network/${encodeURIComponent(network.name)}/forwards/create`}
+            >
+              Create forward
+            </Link>
+          )}
+          {!canEditNetwork(network) && (
+            <Button
+              appearance="positive"
+              className="u-float-right u-no-margin--bottom"
+              disabled
+              title="You do not have permission to create network forwards for this network"
+            >
+              <span>Create forward</span>
+            </Button>
+          )}
+        </>
       )}
       <Row>
         {hasNetworkForwards && (
@@ -230,6 +234,14 @@ const NetworkForwards: FC<Props> = ({ network, project }) => {
                 Learn more about network forwards
               </DocLink>
             </p>
+            {!hasNetworkForwards && (
+              <Link
+                className="p-button--positive u-no-margin--bottom empty-state-button"
+                to={`/ui/project/${encodeURIComponent(project)}/network/${encodeURIComponent(network.name)}/forwards/create`}
+              >
+                Create forward
+              </Link>
+            )}
           </EmptyState>
         )}
       </Row>
