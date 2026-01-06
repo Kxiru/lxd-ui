@@ -15,6 +15,7 @@ import type { LxdDevices } from "types/device";
 import ResourceLink from "components/ResourceLink";
 import { getIpAddresses } from "util/networks";
 import { getImageLink, getInstanceType } from "util/instances";
+import ClusterMemberRichTooltip from "pages/cluster/ClusterMemberRichTooltip";
 
 interface Props {
   instance: LxdInstance;
@@ -81,10 +82,8 @@ const InstanceOverview: FC<Props> = ({ instance }) => {
                     <th className="u-text--muted">Cluster member</th>
                     <td>
                       {instance.location ? (
-                        <ResourceLink
-                          type="cluster-member"
-                          value={instance.location}
-                          to={`/ui/cluster/member/${encodeURIComponent(instance.location)}`}
+                        <ClusterMemberRichTooltip
+                          clusterName={instance.location}
                         />
                       ) : (
                         "-"

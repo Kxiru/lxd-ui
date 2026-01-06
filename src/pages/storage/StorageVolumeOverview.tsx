@@ -9,6 +9,7 @@ import StorageVolumeSize from "pages/storage/StorageVolumeSize";
 import { renderContentType, renderVolumeType } from "util/storageVolume";
 import { useSettings } from "context/useSettings";
 import ResourceLink from "components/ResourceLink";
+import ClusterMemberRichTooltip from "pages/cluster/ClusterMemberRichTooltip";
 
 interface Props {
   volume: LxdStorageVolume;
@@ -52,11 +53,7 @@ const StorageVolumeOverview: FC<Props> = ({ volume }) => {
                 <td>
                   {settings?.environment?.server_clustered &&
                   volume.location ? (
-                    <ResourceLink
-                      type="cluster-member"
-                      value={volume.location}
-                      to={`/ui/cluster/member/${encodeURIComponent(volume.location)}`}
-                    />
+                    <ClusterMemberRichTooltip clusterName={volume.location} />
                   ) : (
                     "-"
                   )}

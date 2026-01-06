@@ -15,12 +15,12 @@ body.is-dark .rich-tooltip-table .p-icon--status-queued-small {
   min-height: 450px;
   width: 430px;
 
-  @media (height <= $medium-tooltip-breakpoint) {
-    min-height: 200px;
+  @media (height <=$large-tooltip-breakpoint) {
+    min-height: 400px;
   }
 
-  @media (height <= $large-tooltip-breakpoint) {
-    min-height: 400px;
+  @media (height <= $medium-tooltip-breakpoint) {
+    min-height: 200px;
   }
 
   .rich-tooltip-row-content {

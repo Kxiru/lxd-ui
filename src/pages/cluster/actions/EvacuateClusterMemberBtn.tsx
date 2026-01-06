@@ -11,12 +11,12 @@ import {
   useNotify,
   useToastNotification,
 } from "@canonical/react-components";
-import ResourceLink from "components/ResourceLink";
 import { useEventQueue } from "context/eventQueue";
 import classnames from "classnames";
 import ResourceLabel from "components/ResourceLabel";
 import { useMemberLoading } from "context/memberLoading";
 import { useServerEntitlements } from "util/entitlements/server";
+import ClusterMemberRichTooltip from "../ClusterMemberRichTooltip";
 
 interface Props {
   member: LxdClusterMember;
@@ -53,12 +53,7 @@ const EvacuateClusterMemberBtn: FC<Props> = ({
   const handleSuccess = () => {
     toastNotify.success(
       <>
-        Member{" "}
-        <ResourceLink
-          type="cluster-member"
-          value={member.server_name}
-          to={`/ui/cluster/member/${encodeURIComponent(member.server_name)}`}
-        />{" "}
+        Member <ClusterMemberRichTooltip clusterName={member.server_name} />{" "}
         evacuation completed.
       </>,
     );
@@ -68,11 +63,7 @@ const EvacuateClusterMemberBtn: FC<Props> = ({
     toastNotify.failure(
       "Member evacuation failed",
       new Error(msg),
-      <ResourceLink
-        type="cluster-member"
-        value={member.server_name}
-        to={`/ui/cluster/member/${encodeURIComponent(member.server_name)}`}
-      />,
+      <ClusterMemberRichTooltip clusterName={member.server_name} />,
     );
   };
 
@@ -82,12 +73,7 @@ const EvacuateClusterMemberBtn: FC<Props> = ({
       .then((operation) => {
         toastNotify.info(
           <>
-            Member{" "}
-            <ResourceLink
-              type="cluster-member"
-              value={member.server_name}
-              to={`/ui/cluster/member/${encodeURIComponent(member.server_name)}`}
-            />{" "}
+            Member <ClusterMemberRichTooltip clusterName={member.server_name} />{" "}
             evacuation started.
           </>,
         );

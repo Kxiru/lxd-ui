@@ -9,6 +9,7 @@ import {
 } from "pages/networks/NetworkSearchFilter";
 import type { LXDNetworkOnClusterMember } from "types/network";
 import { searchChipBaseUrl } from "util/searchAndFilter";
+import ClusterMemberRichChip from "pages/cluster/ClusterMemberRichChip";
 
 interface Props {
   network: LXDNetworkOnClusterMember;
@@ -27,11 +28,7 @@ const NetworkClusterMemberChip: FC<Props> = ({ network }) => {
       to={`${baseUrl}&member=Cluster-wide`}
     />
   ) : (
-    <ResourceLink
-      type="cluster-member"
-      value={network.memberName}
-      to={`${baseUrl}&member=${network.memberName}`}
-    />
+    <ClusterMemberRichChip clusterName={network.memberName} />
   );
 };
 
