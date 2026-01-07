@@ -19,6 +19,7 @@ import { useStorageVolumeEntitlements } from "util/entitlements/storage-volumes"
 import { hasLocation } from "util/storageVolume";
 import VolumeLinkChip from "pages/storage/VolumeLinkChip";
 import classNames from "classnames";
+import StoragePoolRichChip from "./StoragePoolRichChip";
 
 interface Props {
   volume: LxdStorageVolume;
@@ -59,10 +60,9 @@ const MigrateVolumeBtn: FC<Props> = ({
       />
     );
     const poolLink = (
-      <ResourceLink
-        type="pool"
-        value={newTarget}
-        to={`/ui/project/${encodeURIComponent(storageVolume.project)}/storage/pool/${encodeURIComponent(newTarget)}`}
+      <StoragePoolRichChip
+        poolName={newTarget}
+        projectName={storageVolume.project}
       />
     );
     toastNotify.success(
@@ -122,10 +122,9 @@ const MigrateVolumeBtn: FC<Props> = ({
           <ResourceLabel bold type="volume" value={volume.name} />
         );
         const poolLink = (
-          <ResourceLink
-            type="pool"
-            value={targetPool}
-            to={`/ui/project/${encodeURIComponent(volume.project)}/storage/pool/${encodeURIComponent(targetPool)}`}
+          <StoragePoolRichChip
+            poolName={targetPool}
+            projectName={volume.project}
           />
         );
         toastNotify.info(

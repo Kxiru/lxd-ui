@@ -14,6 +14,7 @@ import InstanceMACAddresses from "pages/instances/InstaceMACAddresses";
 import ResourceLink from "components/ResourceLink";
 import InstanceClusterMemberChip from "./InstanceClusterMemberChip";
 import { getImageLink, getInstanceType } from "util/instances";
+import StoragePoolRichChip from "pages/storage/StoragePoolRichChip";
 
 const RECENT_SNAPSHOT_LIMIT = 5;
 
@@ -102,10 +103,9 @@ const InstanceDetailPanelContent: FC<Props> = ({ instance }) => {
         <tr>
           <th className="u-text--muted">Root storage pool</th>
           <td>
-            <ResourceLink
-              type="pool"
-              value={rootPool}
-              to={`/ui/project/${encodeURIComponent(instance.project)}/storage/pool/${encodeURIComponent(rootPool)}`}
+            <StoragePoolRichChip
+              poolName={rootPool}
+              projectName={instance.project}
             />
           </td>
         </tr>

@@ -59,6 +59,7 @@ import StorageVolumeBulkDelete from "./actions/StorageVolumeBulkDelete";
 import { useCurrentProject } from "context/useCurrentProject";
 import { isProjectWithVolumes } from "util/projects";
 import DocLink from "components/DocLink";
+import StoragePoolRichChip from "./StoragePoolRichChip";
 
 const StorageVolumes: FC = () => {
   const notify = useNotify();
@@ -248,10 +249,9 @@ const StorageVolumes: FC = () => {
         },
         {
           content: (
-            <ResourceLink
-              type="pool"
-              value={volume.pool}
-              to={`/ui/project/${encodeURIComponent(project)}/storage/pool/${encodeURIComponent(volume.pool)}`}
+            <StoragePoolRichChip
+              poolName={volume.pool}
+              projectName={volume.project}
             />
           ),
           role: "cell",

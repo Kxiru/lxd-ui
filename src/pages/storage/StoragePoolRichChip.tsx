@@ -1,0 +1,61 @@
+import type { FC } from "react";
+import { Tooltip } from "@canonical/react-components";
+import { useIsScreenBelow } from "context/useIsScreenBelow";
+import ResourceLink from "components/ResourceLink";
+import { MEDIUM_TOOLTIP_BREAKPOINT } from "components/RichTooltipTable";
+import StoragePoolRichTooltip from "./StoragePoolRichTooltip";
+
+interface Props {
+  poolName: string;
+  projectName: string;
+  resourceLinkClassName?: string;
+  resourceLinkDisabled?: boolean;
+  url?: string;
+  location?: string;
+}
+
+const StoragePoolRichChip: FC<Props> = ({
+  poolName,
+  projectName,
+  resourceLinkClassName,
+  resourceLinkDisabled,
+  url,
+  location,
+}) => {
+  const showTooltip = !useIsScreenBelow(MEDIUM_TOOLTIP_BREAKPOINT, "height");
+
+  url =
+    url ??
+    `/ui/project/${encodeURIComponent(projectName)}/storage/pool/${encodeURIComponent(poolName)}`;
+  const resourceLink = (
+    <ResourceLink
+      type="pool"
+      value={poolName}
+      to={url}
+      hasTitle={!showTooltip}
+      className={resourceLinkClassName}
+      disabled={resourceLinkDisabled}
+    />
+  );
+
+  if (!showTooltip) {
+    return <>{resourceLink}</>;
+  }
+
+  return (
+    <Tooltip
+      zIndex={1000}
+      message={
+        <StoragePoolRichTooltip
+          poolName={poolName}
+          url={url}
+          location={location}
+        />
+      }
+    >
+      {resourceLink}
+    </Tooltip>
+  );
+};
+
+export default StoragePoolRichChip;
