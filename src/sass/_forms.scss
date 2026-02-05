@@ -220,6 +220,12 @@
     .p-form-help-text > * {
       margin-bottom: 0;
     }
+
+    .network-device-form {
+      .inherited {
+        width: 13rem;
+      }
+    }
   }
 
   .inherited-devices {

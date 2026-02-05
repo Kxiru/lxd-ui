@@ -13,6 +13,7 @@ import { combineAcls, getNetworkAcls } from "util/networks";
 import { getDeviceAcls } from "util/devices";
 import NetworkRichChip from "pages/networks/NetworkRichChip";
 import { ROOT_PATH } from "util/rootPath";
+import NetworkDefaultACLRead from "pages/networks/forms/NetworkDefaultACLRead";
 
 const getNetworkDeviceIpAddress = ({
   network,
@@ -128,6 +129,37 @@ export const getNetworkDeviceRows = ({
       }),
     );
 
+    if (showIpAddresses) {
+      const families = ["IPv4", "IPv6"] as const;
+      const activeIps = families
+        .map((family) => ({
+          family,
+          ip: getNetworkDeviceIpAddress({ network, device, family }),
+        }))
+        .filter((item) => !!item.ip);
+
+      activeIps.forEach(({ family, ip }) => {
+        rows.push(
+          getConfigurationRowBase({
+            className: classnames("no-border-top", {}),
+            configuration: <div className="u-text--muted">{family}</div>,
+            inherited: (
+              <div>
+                <b
+                  className={classnames("mono-font", {
+                    "u-text--line-through": isDetached,
+                  })}
+                >
+                  {ip}
+                </b>
+              </div>
+            ),
+            override: null,
+          }),
+        );
+      });
+    }
+
     const acls = combineAcls(getNetworkAcls(network), getDeviceAcls(device));
     if (acls.length > 0) {
       rows.push(
@@ -158,37 +190,36 @@ export const getNetworkDeviceRows = ({
       );
     }
 
-    if (showIpAddresses) {
-      const families = ["IPv4", "IPv6"] as const;
-      const activeIps = families
-        .map((family) => ({
-          family,
-          ip: getNetworkDeviceIpAddress({ network, device, family }),
-        }))
-        .filter((item) => !!item.ip);
+    if (acls.length > 0) {
+      const getDefaultEgressIngress = () => {
+        if (
+          device["security.acls.default.egress.action"] &&
+          device["security.acls.default.ingress.action"]
+        ) {
+          return {
+            Egress: device["security.acls.default.egress.action"],
+            Ingress: device["security.acls.default.ingress.action"],
+          };
+        }
 
-      activeIps.forEach(({ family, ip }, index) => {
-        rows.push(
-          getConfigurationRowBase({
-            className: classnames("no-border-top", {
-              "device-last-row": index === activeIps.length - 1,
-            }),
-            configuration: <div className="u-text--muted">{family}</div>,
-            inherited: (
-              <div>
-                <b
-                  className={classnames("mono-font", {
-                    "u-text--line-through": isDetached,
-                  })}
-                >
-                  {ip}
-                </b>
-              </div>
-            ),
-            override: null,
-          }),
-        );
-      });
+        return {
+          Egress: network.config["security.acls.default.egress.action"] ?? "",
+          Ingress: network.config["security.acls.default.ingress.action"] ?? "",
+        };
+      };
+
+      rows.push(
+        getConfigurationRowBase({
+          className: "no-border-top",
+          configuration: <div className="u-text--muted"></div>,
+          inherited: (
+            <div>
+              <NetworkDefaultACLRead values={getDefaultEgressIngress()} />
+            </div>
+          ),
+          override: null,
+        }),
+      );
     }
   }
 
